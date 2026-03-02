@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+royal-kiana-frontend/node_modules/
+royal-kiana-backend/node_modules/
+
+# Environment variables
+.env
+royal-kiana-backend/.env
+royal-kiana-frontend/.env
+
+# Production builds
+royal-kiana-frontend/build/
+royal-kiana-backend/dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+
+# Misc
+.cache/
+.temp/
