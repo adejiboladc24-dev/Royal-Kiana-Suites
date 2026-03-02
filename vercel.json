@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd royal-kiana-frontend && npm install && npm run build",
+  "outputDirectory": "royal-kiana-frontend/build",
+  "framework": "create-react-app",
+  "installCommand": "cd royal-kiana-frontend && npm install"
+}
