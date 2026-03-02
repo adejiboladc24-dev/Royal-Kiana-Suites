@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../utils/api';
 
 const StaffPortal = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('bookings');
   const [staffAuth, setStaffAuth] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -19,23 +17,7 @@ const StaffPortal = () => {
   });
   const [dataLoading, setDataLoading] = useState(false);
 
-  // Check if staff is already logged in
-  useEffect(() => {
-    const staffToken = localStorage.getItem('staffToken');
-    if (staffToken) {
-      setStaffAuth(true);
-      fetchDashboardData();
-    }
-  }, []);
-
-  // Fetch dashboard data when authenticated
-  useEffect(() => {
-    if (staffAuth) {
-      fetchDashboardData();
-    }
-  }, [staffAuth]);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setDataLoading(true);
     try {
       const [statsRes, bookingsRes] = await Promise.all([
@@ -53,7 +35,23 @@ const StaffPortal = () => {
     } finally {
       setDataLoading(false);
     }
-  };
+  }, []);
+
+  // Check if staff is already logged in
+  useEffect(() => {
+    const staffToken = localStorage.getItem('staffToken');
+    if (staffToken) {
+      setStaffAuth(true);
+      fetchDashboardData();
+    }
+  }, [fetchDashboardData]);
+
+  // Fetch dashboard data when authenticated
+  useEffect(() => {
+    if (staffAuth) {
+      fetchDashboardData();
+    }
+  }, [staffAuth, fetchDashboardData]);
 
   const handleStaffLogin = async (e) => {
     e.preventDefault();
