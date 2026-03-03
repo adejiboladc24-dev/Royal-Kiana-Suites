@@ -6,5 +6,6 @@ const bookingController = require('../controllers/bookingController');
 router.post('/', verifyToken, bookingController.createBooking);
 router.get('/', verifyToken, bookingController.getUserBookings);
 router.get('/:id', verifyToken, bookingController.getBookingById);
+router.post('/:id/pay', verifyToken, bookingController.payForBooking);
 
 module.exports = router;

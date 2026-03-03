@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { dashboardAPI, bookingAPI } from '../utils/api';
+import { dashboardAPI, bookingAPI, paymentAPI } from '../utils/api';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -12,30 +12,91 @@ const Dashboard = () => {
   });
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [paymentLoading, setPaymentLoading] = useState({});
+
+  const fetchData = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const [dashRes, bookingsRes] = await Promise.all([
+        dashboardAPI.getDashboard(),
+        bookingAPI.getUserBookings()
+      ]);
+      setDashboardData(dashRes.data);
+      setBookings(bookingsRes.data.bookings);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const [dashRes, bookingsRes] = await Promise.all([
-          dashboardAPI.getDashboard(),
-          bookingAPI.getUserBookings()
-        ]);
-        setDashboardData(dashRes.data);
-        setBookings(bookingsRes.data.bookings);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [user]);
+
+  const handlePayment = async (bookingId) => {
+    setPaymentLoading(prev => ({ ...prev, [bookingId]: true }));
+    
+    try {
+      const response = await paymentAPI.payForBooking(bookingId);
+      
+      // In a real implementation, redirect to payment gateway
+      alert(`Payment initialized! Reference: ${response.data.reference}\nAmount: ₦${parseFloat(response.data.amount).toLocaleString()}\n\nIn production, this would redirect to the payment gateway.`);
+      
+      // Refresh bookings after payment initialization
+      await fetchData();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert(error.response?.data?.error || 'Payment initialization failed');
+    } finally {
+      setPaymentLoading(prev => ({ ...prev, [bookingId]: false }));
+    }
+  };
+
+  const getBookingStatusColor = (status, paymentStatus) => {
+    if (paymentStatus === 'completed') {
+      return 'bg-green-500/10 text-green-600 dark:text-green-400';
+    }
+    if (status === 'confirmed') {
+      return 'bg-blue-500/10 text-blue-600 dark:text-blue-400';
+    }
+    if (status === 'cancelled') {
+      return 'bg-red-500/10 text-red-600 dark:text-red-400';
+    }
+    return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
+  };
+
+  const getBookingStatusText = (status, paymentStatus) => {
+    if (paymentStatus === 'completed') return 'Paid';
+    if (status === 'confirmed') return 'Confirmed';
+    if (status === 'cancelled') return 'Cancelled';
+    return 'Pending Payment';
+  };
+
+  const isUpcoming = (checkIn) => {
+    const today = new Date();
+    const checkInDate = new Date(checkIn);
+    return checkInDate >= today;
+  };
+
+  const isCompleted = (checkOut) => {
+    const today = new Date();
+    const checkOutDate = new Date(checkOut);
+    return checkOutDate < today;
+  };
+
+  const categorizeBookings = () => {
+    const pending = bookings.filter(b => b.payment_status !== 'completed' && b.status !== 'cancelled');
+    const upcoming = bookings.filter(b => b.payment_status === 'completed' && isUpcoming(b.check_in) && !isCompleted(b.check_out));
+    const completed = bookings.filter(b => isCompleted(b.check_out));
+    const cancelled = bookings.filter(b => b.status === 'cancelled');
+    
+    return { pending, upcoming, completed, cancelled };
+  };
 
   if (loading) {
     return (
@@ -93,6 +154,8 @@ const Dashboard = () => {
     );
   }
 
+  const { pending, upcoming, completed } = categorizeBookings();
+
   return (
     <div className="pt-20 min-h-screen bg-gray-50 dark:bg-dark-900">
       <section className="py-12 bg-gradient-to-br from-primary-500 to-primary-700">
@@ -108,7 +171,7 @@ const Dashboard = () => {
 
       <section className="py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -119,7 +182,7 @@ const Dashboard = () => {
                 <div>
                   <p className="text-gray-600 dark:text-white/60 text-sm mb-1">Total Bookings</p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {dashboardData?.stats?.totalBookings || 0}
+                    {bookings.length}
                   </p>
                 </div>
                 <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center">
@@ -138,14 +201,14 @@ const Dashboard = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 dark:text-white/60 text-sm mb-1">Upcoming</p>
+                  <p className="text-gray-600 dark:text-white/60 text-sm mb-1">Pending Payment</p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {dashboardData?.stats?.upcomingBookings || 0}
+                    {pending.length}
                   </p>
                 </div>
-                <div className="w-14 h-14 bg-orange-100 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center">
-                  <svg className="w-7 h-7 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div className="w-14 h-14 bg-yellow-100 dark:bg-yellow-900/30 rounded-2xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
               </div>
@@ -159,9 +222,30 @@ const Dashboard = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
+                  <p className="text-gray-600 dark:text-white/60 text-sm mb-1">Upcoming</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {upcoming.length}
+                  </p>
+                </div>
+                <div className="w-14 h-14 bg-orange-100 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="card-premium"
+            >
+              <div className="flex items-center justify-between">
+                <div>
                   <p className="text-gray-600 dark:text-white/60 text-sm mb-1">Completed</p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {dashboardData?.stats?.completedBookings || 0}
+                    {completed.length}
                   </p>
                 </div>
                 <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center">
@@ -209,30 +293,79 @@ const Dashboard = () => {
                       transition={{ delay: index * 0.1 }}
                       className="card-premium"
                     >
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div className="mb-4 md:mb-0">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                            {booking.room_type}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-white/60">
-                            {new Date(booking.check_in).toLocaleDateString()} - {new Date(booking.check_out).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-white/60">
-                            Guests: {booking.guests}
-                          </p>
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                        <div className="mb-4 lg:mb-0 flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                              {booking.room_type}
+                            </h3>
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getBookingStatusColor(booking.status, booking.payment_status)}`}>
+                              {getBookingStatusText(booking.status, booking.payment_status)}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-600 dark:text-white/60">
+                            <div className="flex items-center space-x-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span>
+                                {new Date(booking.check_in).toLocaleDateString()} - {new Date(booking.check_out).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                              <span>{booking.guests} Guest{booking.guests > 1 ? 's' : ''}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                              </svg>
+                              <span>₦{parseFloat(booking.total_price).toLocaleString()}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        
+                        <div className="flex items-center space-x-3">
+                          {booking.payment_status !== 'completed' && booking.status !== 'cancelled' && (
+                            <button
+                              onClick={() => handlePayment(booking.id)}
+                              disabled={paymentLoading[booking.id]}
+                              className="btn-primary flex items-center space-x-2 text-sm px-4 py-2"
+                            >
+                              {paymentLoading[booking.id] ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                  <span>Processing...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                  </svg>
+                                  <span>Pay Now</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+                          
+                          {booking.payment_status === 'completed' && (
+                            <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="text-sm font-medium">Paid</span>
+                            </div>
+                          )}
+                          
                           <div className="text-right">
                             <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                               ₦{parseFloat(booking.total_price).toLocaleString()}
                             </p>
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                              booking.status === 'confirmed' 
-                                ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-                                : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
-                            }`}>
-                              {booking.status}
-                            </span>
+                            <p className="text-xs text-gray-500 dark:text-white/50">
+                              Booked {new Date(booking.created_at).toLocaleDateString()}
+                            </p>
                           </div>
                         </div>
                       </div>

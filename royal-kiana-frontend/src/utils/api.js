@@ -45,6 +45,7 @@ export const bookingAPI = {
 export const paymentAPI = {
   initialize: (data) => api.post('/payment/opay/initialize', data),
   verify: (data) => api.post('/payment/opay/verify', data),
+  payForBooking: (bookingId) => api.post(`/bookings/${bookingId}/pay`),
 };
 
 // Admin/Staff endpoints
