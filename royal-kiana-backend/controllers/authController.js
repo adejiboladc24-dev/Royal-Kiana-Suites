@@ -33,9 +33,9 @@ exports.signup = async (req, res) => {
     const newUser = await User.create(name, email, hashedPassword);
 
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
+      { id: newUser.id, email: newUser.email, role: newUser.role || 'customer' },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '7d' }
     );
 
     res.status(201).json({
@@ -43,7 +43,8 @@ exports.signup = async (req, res) => {
       user: {
         id: newUser.id,
         name: newUser.name,
-        email: newUser.email
+        email: newUser.email,
+        role: newUser.role || 'customer'
       },
       token
     });
@@ -76,9 +77,9 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role || 'customer' },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '7d' }
     );
 
     res.status(200).json({
@@ -86,7 +87,8 @@ exports.login = async (req, res) => {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role || 'customer'
       },
       token
     });
@@ -247,5 +249,41 @@ exports.resetPassword = async (req, res) => {
   } catch (error) {
     console.error('Reset password error:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Staff login with hardcoded credentials
+exports.staffLogin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    // Hardcoded staff credentials
+    if (username === 'staff' && password === 'royal2026') {
+      const token = jwt.sign(
+        { id: 'staff-user', email: 'staff@royalkiana.com', role: 'staff' },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      res.status(200).json({
+        message: 'Staff login successful',
+        user: {
+          id: 'staff-user',
+          name: 'Staff User',
+          email: 'staff@royalkiana.com',
+          role: 'staff'
+        },
+        token
+      });
+    } else {
+      res.status(401).json({ error: 'Invalid staff credentials' });
+    }
+  } catch (error) {
+    console.error('Staff login error:', error);
+    res.status(500).json({ error: 'Server error during staff login' });
   }
 };

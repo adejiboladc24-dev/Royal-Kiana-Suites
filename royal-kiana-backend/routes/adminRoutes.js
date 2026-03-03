@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middleware/authMiddleware');
+const { verifyToken, requireStaff } = require('../middleware/authMiddleware');
 const { pool } = require('../config/db');
 
 // Staff login (separate from regular user login)
@@ -33,7 +33,7 @@ router.post('/staff/login', async (req, res) => {
 });
 
 // Get all bookings (staff only)
-router.get('/bookings', verifyToken, async (req, res) => {
+router.get('/bookings', verifyToken, requireStaff, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
@@ -61,7 +61,7 @@ router.get('/bookings', verifyToken, async (req, res) => {
 });
 
 // Get dashboard stats (staff only)
-router.get('/stats', verifyToken, async (req, res) => {
+router.get('/stats', verifyToken, requireStaff, async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0];
 
@@ -102,7 +102,7 @@ router.get('/stats', verifyToken, async (req, res) => {
 });
 
 // Update booking status (staff only)
-router.patch('/bookings/:id/status', verifyToken, async (req, res) => {
+router.patch('/bookings/:id/status', verifyToken, requireStaff, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -131,7 +131,7 @@ router.patch('/bookings/:id/status', verifyToken, async (req, res) => {
 });
 
 // Get all users (staff only)
-router.get('/users', verifyToken, async (req, res) => {
+router.get('/users', verifyToken, requireStaff, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
