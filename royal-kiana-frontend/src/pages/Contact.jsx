@@ -5,17 +5,25 @@ const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
-    setTimeout(() => {
-      setSuccess(true);
-      setLoading(false);
-      setFormData({ name: '', email: '', phone: '', message: '' });
-      setTimeout(() => setSuccess(false), 3000);
-    }, 1000);
+    // Create WhatsApp message
+    const whatsappMessage = `*New Contact Form Message*%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Phone:* ${formData.phone}%0A%0A*Message:*%0A${formData.message}`;
+    
+    // Open WhatsApp with pre-filled message
+    window.open(`https://wa.me/2347070279453?text=${whatsappMessage}`, '_blank');
+    
+    // Show success message
+    setSuccess(true);
+    setFormData({ name: '', email: '', phone: '', message: '' });
+    setLoading(false);
+    
+    setTimeout(() => setSuccess(false), 5000);
   };
 
   return (
@@ -155,8 +163,11 @@ const Contact = () => {
               </h2>
 
               {success && (
-                <div className="bg-green-500/10 border border-green-500/50 text-green-600 dark:text-green-400 px-4 py-3 rounded-lg mb-6">
-                  Message sent successfully! We'll get back to you soon.
+                <div className="bg-green-500/10 border border-green-500/50 text-green-600 dark:text-green-400 px-4 py-3 rounded-lg mb-6 flex items-start space-x-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>WhatsApp opened! Please send your message there. We'll reply within 24 hours.</span>
                 </div>
               )}
 
