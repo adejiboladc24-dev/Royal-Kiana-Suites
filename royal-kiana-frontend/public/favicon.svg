@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Premium Gold Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Deep Blue Gradient -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow Filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Inner Shadow -->
+    <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="2"/>
+      <feGaussianBlur stdDeviation="2" result="offset-blur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.2"/>
+      <feComposite in2="offset-blur" operator="in"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle with Premium Feel -->
+  <circle cx="256" cy="256" r="240" fill="url(#blueGrad)" filter="url(#shadow)"/>
+  <circle cx="256" cy="256" r="220" fill="none" stroke="url(#goldGrad)" stroke-width="4" opacity="0.8"/>
+  
+  <!-- Luxury Hotel Building -->
+  <g transform="translate(256, 256)">
+    <!-- Main Building Structure -->
+    <rect x="-80" y="-60" width="160" height="120" fill="#ffffff" rx="8" filter="url(#innerShadow)"/>
+    
+    <!-- Elegant Roof with Crown Design -->
+    <path d="M -90 -60 L -60 -90 L -30 -75 L 0 -95 L 30 -75 L 60 -90 L 90 -60 Z" 
+          fill="url(#goldGrad)" filter="url(#shadow)"/>
+    
+    <!-- Premium Windows Grid -->
+    <g fill="#1e3a8a" opacity="0.8">
+      <!-- Top Floor -->
+      <rect x="-65" y="-45" width="18" height="18" rx="2"/>
+      <rect x="-25" y="-45" width="18" height="18" rx="2"/>
+      <rect x="15" y="-45" width="18" height="18" rx="2"/>
+      <rect x="55" y="-45" width="18" height="18" rx="2"/>
+      
+      <!-- Middle Floor -->
+      <rect x="-65" y="-15" width="18" height="18" rx="2"/>
+      <rect x="-25" y="-15" width="18" height="18" rx="2"/>
+      <rect x="15" y="-15" width="18" height="18" rx="2"/>
+      <rect x="55" y="-15" width="18" height="18" rx="2"/>
+      
+      <!-- Bottom Floor -->
+      <rect x="-65" y="15" width="18" height="18" rx="2"/>
+      <rect x="15" y="15" width="18" height="18" rx="2"/>
+      <rect x="55" y="15" width="18" height="18" rx="2"/>
+    </g>
+    
+    <!-- Grand Entrance Door -->
+    <rect x="-20" y="15" width="40" height="45" fill="url(#goldGrad)" rx="4"/>
+    <rect x="-15" y="20" width="30" height="35" fill="#8B4513" rx="2"/>
+    <circle cx="8" cy="37" r="2" fill="url(#goldGrad)"/>
+    
+    <!-- Royal Crown Symbol -->
+    <g transform="translate(0, -85)">
+      <path d="M -15 0 L -10 -12 L -5 -8 L 0 -15 L 5 -8 L 10 -12 L 15 0 Z" 
+            fill="url(#goldGrad)" filter="url(#shadow)"/>
+      <circle cx="-8" cy="-8" r="2" fill="#FFD700"/>
+      <circle cx="0" cy="-12" r="3" fill="#FFD700"/>
+      <circle cx="8" cy="-8" r="2" fill="#FFD700"/>
+    </g>
+    
+    <!-- Elegant "RK" Monogram -->
+    <g transform="translate(0, 75)" fill="url(#goldGrad)" font-family="serif" font-weight="bold" font-size="32" text-anchor="middle">
+      <text x="-8" y="8" filter="url(#shadow)">R</text>
+      <text x="8" y="8" filter="url(#shadow)">K</text>
+    </g>
+    
+    <!-- Decorative Elements -->
+    <g stroke="url(#goldGrad)" stroke-width="2" fill="none" opacity="0.6">
+      <path d="M -100 -10 Q -90 -15 -80 -10"/>
+      <path d="M 80 -10 Q 90 -15 100 -10"/>
+      <path d="M -100 10 Q -90 15 -80 10"/>
+      <path d="M 80 10 Q 90 15 100 10"/>
+    </g>
+  </g>
+  
+  <!-- Outer Ring Detail -->
+  <circle cx="256" cy="256" r="250" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.4"/>
+</svg>
