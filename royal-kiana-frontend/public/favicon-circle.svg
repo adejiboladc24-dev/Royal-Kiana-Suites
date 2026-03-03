@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <!-- Ultra Bright Gold -->
+    <radialGradient id="ultraGold" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#FFEB3B;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="80%" style="stop-color:#FFC107;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8F00;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Deep Black Background -->
+    <radialGradient id="deepBlack" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Maximum Shadow -->
+    <filter id="maxShadow" x="-100%" y="-100%" width="300%" height="300%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="1"/>
+    </filter>
+    
+    <!-- Bright Glow -->
+    <filter id="brightGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Perfect Circle - Maximum Contrast -->
+  <circle cx="64" cy="64" r="64" fill="url(#deepBlack)"/>
+  
+  <!-- Ultra Bright Gold Ring -->
+  <circle cx="64" cy="64" r="58" fill="none" stroke="url(#ultraGold)" stroke-width="8" filter="url(#brightGlow)"/>
+  
+  <!-- Inner Gold Background -->
+  <circle cx="64" cy="64" r="50" fill="url(#ultraGold)" opacity="0.2"/>
+  
+  <!-- Massive Royal Crown -->
+  <g transform="translate(64, 35)">
+    <path d="M -15 0 L -10 -12 L -5 -6 L 0 -16 L 5 -6 L 10 -12 L 15 0 Z" 
+          fill="url(#ultraGold)" 
+          filter="url(#maxShadow)"
+          stroke="#FFEB3B" 
+          stroke-width="1"/>
+    <!-- Huge Crown Jewels -->
+    <circle cx="-6" cy="-8" r="2" fill="#FFEB3B" filter="url(#brightGlow)"/>
+    <circle cx="0" cy="-12" r="3" fill="#FFEB3B" filter="url(#brightGlow)"/>
+    <circle cx="6" cy="-8" r="2" fill="#FFEB3B" filter="url(#brightGlow)"/>
+  </g>
+  
+  <!-- MASSIVE Royal "R" -->
+  <text x="64" y="85" 
+        font-family="serif" 
+        font-size="48" 
+        font-weight="900" 
+        fill="url(#ultraGold)" 
+        text-anchor="middle" 
+        filter="url(#brightGlow)"
+        stroke="#FFEB3B" 
+        stroke-width="2">R</text>
+  
+  <!-- Bright Corner Accents -->
+  <circle cx="25" cy="64" r="3" fill="url(#ultraGold)" filter="url(#brightGlow)"/>
+  <circle cx="103" cy="64" r="3" fill="url(#ultraGold)" filter="url(#brightGlow)"/>
+  <circle cx="64" cy="103" r="3" fill="url(#ultraGold)" filter="url(#brightGlow)"/>
+  
+  <!-- Ultra Bright Outer Ring -->
+  <circle cx="64" cy="64" r="62" fill="none" stroke="#FFEB3B" stroke-width="2" opacity="0.8"/>
+</svg>

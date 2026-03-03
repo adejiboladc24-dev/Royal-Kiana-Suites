@@ -1,54 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <!-- Luxury Gold Gradient -->
+    <!-- Vibrant Gold Gradient -->
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFC107;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FF9800;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6F00;stop-opacity:1" />
     </linearGradient>
     
-    <!-- Dark Premium Background -->
-    <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#1e293b;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#334155;stop-opacity:1" />
-    </linearGradient>
+    <!-- Deep Luxury Background -->
+    <radialGradient id="darkGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </radialGradient>
     
-    <!-- Shadow Filter -->
-    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.4"/>
+    <!-- Strong Shadow -->
+    <filter id="strongShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.8"/>
+    </filter>
+    
+    <!-- Inner Glow -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
   
-  <!-- Premium Dark Background -->
-  <rect width="64" height="64" fill="url(#darkGrad)" rx="8"/>
+  <!-- Perfect Circle Background -->
+  <circle cx="32" cy="32" r="32" fill="url(#darkGrad)" filter="url(#strongShadow)"/>
   
-  <!-- Centered Royal "R" Logo -->
-  <g transform="translate(32, 32)">
-    <!-- Gold Circle Background -->
-    <circle cx="0" cy="0" r="24" fill="url(#goldGrad)" filter="url(#shadow)"/>
-    
-    <!-- Inner Dark Circle -->
-    <circle cx="0" cy="0" r="20" fill="#0f172a" opacity="0.8"/>
-    
-    <!-- Royal "R" Letter -->
-    <text x="0" y="8" 
-          font-family="serif" 
-          font-size="28" 
-          font-weight="bold" 
+  <!-- Bright Gold Ring -->
+  <circle cx="32" cy="32" r="29" fill="none" stroke="url(#goldGrad)" stroke-width="3" opacity="0.9"/>
+  
+  <!-- Inner Gold Circle -->
+  <circle cx="32" cy="32" r="24" fill="url(#goldGrad)" opacity="0.15"/>
+  
+  <!-- Royal Crown at Top -->
+  <g transform="translate(32, 18)">
+    <path d="M -8 0 L -5 -6 L -2 -3 L 0 -8 L 2 -3 L 5 -6 L 8 0 Z" 
           fill="url(#goldGrad)" 
-          text-anchor="middle" 
-          filter="url(#shadow)">R</text>
-    
-    <!-- Crown Accent -->
-    <path d="M -8 -18 L -4 -22 L 0 -20 L 4 -22 L 8 -18 Z" 
-          fill="url(#goldGrad)" 
-          filter="url(#shadow)"/>
-    <circle cx="-4" cy="-20" r="1" fill="#FFD700"/>
-    <circle cx="0" cy="-21" r="1.5" fill="#FFD700"/>
-    <circle cx="4" cy="-20" r="1" fill="#FFD700"/>
+          filter="url(#strongShadow)"/>
+    <!-- Crown Jewels -->
+    <circle cx="-3" cy="-4" r="1" fill="#FFD700"/>
+    <circle cx="0" cy="-6" r="1.5" fill="#FFD700"/>
+    <circle cx="3" cy="-4" r="1" fill="#FFD700"/>
   </g>
   
-  <!-- Luxury Border -->
-  <rect width="64" height="64" fill="none" stroke="url(#goldGrad)" stroke-width="1" rx="8" opacity="0.6"/>
+  <!-- Bold Royal "R" -->
+  <text x="32" y="42" 
+        font-family="serif" 
+        font-size="28" 
+        font-weight="900" 
+        fill="url(#goldGrad)" 
+        text-anchor="middle" 
+        filter="url(#glow)"
+        stroke="#FFD700" 
+        stroke-width="0.5">R</text>
+  
+  <!-- Decorative Dots -->
+  <circle cx="16" cy="32" r="1.5" fill="url(#goldGrad)" opacity="0.7"/>
+  <circle cx="48" cy="32" r="1.5" fill="url(#goldGrad)" opacity="0.7"/>
+  <circle cx="32" cy="50" r="1.5" fill="url(#goldGrad)" opacity="0.7"/>
+  
+  <!-- Outer Highlight Ring -->
+  <circle cx="32" cy="32" r="31" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.4"/>
 </svg>
