@@ -1,12 +1,12 @@
 {
   "short_name": "Royal Kiana",
   "name": "Royal Kiana Suites - Luxury Hotel",
+  "description": "Premium luxury hotel accommodation in Lagos, Nigeria. Experience royal hospitality at Royal Kiana Suites.",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     },
     {
       "src": "favicon-16x16.png",
@@ -36,9 +36,10 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#3E2723",
-  "background_color": "#3E2723",
-  "description": "Premium luxury hotel accommodation in Lagos, Nigeria. Experience royal hospitality at Royal Kiana Suites.",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
   "categories": ["travel", "hospitality", "lifestyle"],
-  "orientation": "portrait-primary"
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "id": "royal-kiana-suites"
 }
